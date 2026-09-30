@@ -58,6 +58,7 @@ public class seilaTela extends javax.swing.JFrame {
         jButtonAdd.addActionListener(this::jButtonAddActionPerformed);
 
         jComboBoxFiltro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Todos", "Concluído", "Não Concluído" }));
+        jComboBoxFiltro.addItemListener(this::jComboBoxFiltroItemStateChanged);
 
         jTableTarefa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -183,6 +184,13 @@ public class seilaTela extends javax.swing.JFrame {
         
         preencherTabela();
     }//GEN-LAST:event_jButtonConcTarefaActionPerformed
+
+    private void jComboBoxFiltroItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxFiltroItemStateChanged
+        // TODO add your handling code here:
+        filtrarTabela();
+        
+        preencherTabela();
+    }//GEN-LAST:event_jComboBoxFiltroItemStateChanged
     
     private void filtrarTabela(){
         int opcao = jComboBoxFiltro.getSelectedIndex();
