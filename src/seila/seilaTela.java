@@ -4,9 +4,12 @@
  */
 package seila;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
@@ -21,6 +24,11 @@ public class seilaTela extends javax.swing.JFrame {
     private static final String CONCLUIDA = "Concluída!";
     private static final String NAO_CONCLUIDA = "Não concluída!";
     
+    int total = 0;
+    int Nconc = 0;
+    int conc = 0;
+
+    
     private final ArrayList<String> tarefas = new ArrayList<>();
     private final ArrayList<String> tarefasFiltradas = new ArrayList<>();
     /**
@@ -33,7 +41,13 @@ public class seilaTela extends javax.swing.JFrame {
         
         
         model = (DefaultTableModel) jTableTarefa.getModel();
+        
+        jTextFieldTotal.setText(Integer.toString(total));
+        jTextFieldConcluidas.setText(Integer.toString(conc));
+        jTextFieldNConcluidas.setText(Integer.toString(Nconc));
     }
+    
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -51,6 +65,13 @@ public class seilaTela extends javax.swing.JFrame {
         jTableTarefa = new javax.swing.JTable();
         jButtonConcTarefa = new javax.swing.JButton();
         jButtonRemoveTarefa = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabelTotal = new javax.swing.JLabel();
+        jLabelConc = new javax.swing.JLabel();
+        jLabelNConc = new javax.swing.JLabel();
+        jTextFieldTotal = new javax.swing.JTextField();
+        jTextFieldConcluidas = new javax.swing.JTextField();
+        jTextFieldNConcluidas = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -62,15 +83,23 @@ public class seilaTela extends javax.swing.JFrame {
 
         jTableTarefa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Tarefas", "Status"
+                "Tarefas", "Status", "Data"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPaneTarefas.setViewportView(jTableTarefa);
 
         jButtonConcTarefa.setText("Concluir");
@@ -79,19 +108,77 @@ public class seilaTela extends javax.swing.JFrame {
         jButtonRemoveTarefa.setText("Remover");
         jButtonRemoveTarefa.addActionListener(this::jButtonRemoveTarefaActionPerformed);
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabelTotal.setText("Total:");
+
+        jLabelConc.setText("Concluídas:");
+
+        jLabelNConc.setText("Não Concluídas:");
+
+        jTextFieldTotal.setEditable(false);
+        jTextFieldTotal.setText("jTextField1");
+        jTextFieldTotal.addActionListener(this::jTextFieldTotalActionPerformed);
+
+        jTextFieldConcluidas.setEditable(false);
+        jTextFieldConcluidas.setText("jTextField1");
+
+        jTextFieldNConcluidas.setEditable(false);
+        jTextFieldNConcluidas.setText("jTextField1");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabelNConc)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextFieldNConcluidas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelTotal)
+                            .addComponent(jLabelConc))
+                        .addGap(44, 44, 44)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldConcluidas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextFieldTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelTotal)
+                    .addComponent(jTextFieldTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldConcluidas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelConc))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jTextFieldNConcluidas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelNConc))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jTextFieldDescTarefa, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButtonAdd))
-                    .addComponent(jScrollPaneTarefas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                    .addComponent(jScrollPaneTarefas, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jComboBoxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
@@ -112,6 +199,8 @@ public class seilaTela extends javax.swing.JFrame {
                 .addComponent(jComboBoxFiltro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPaneTarefas, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonConcTarefa)
@@ -121,7 +210,35 @@ public class seilaTela extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    private void preencherStatus(){
+        conc = 0;
+        Nconc = 0;
+        for (int i = 0; i < tarefas.size(); i++) {
+            String[] dados;
+            String tarefa = tarefas.get(i);
+            dados = tarefa.split(";");
+            total = tarefas.size();
+            
+            
+            if (dados[1].equals(CONCLUIDA)){
+                conc += 1;
+            }
+            if (dados[1].equals(NAO_CONCLUIDA)){
+                Nconc += 1;
+            }
+        }
+        
+        
+        
+        jTextFieldTotal.setText(Integer.toString(total));
+        jTextFieldConcluidas.setText(Integer.toString(conc));
+        jTextFieldNConcluidas.setText(Integer.toString(Nconc));
+        
+        
+    }
+    
+    
     private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAddActionPerformed
         // TODO add your handling code here:
         if (jTextFieldDescTarefa.getText().trim().isEmpty()){
@@ -133,9 +250,14 @@ public class seilaTela extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "A tarefa " + jTextFieldDescTarefa.getText() + " já existe.");
         }
         
-        tarefas.add(jTextFieldDescTarefa.getText() + ";" + NAO_CONCLUIDA);
+        LocalDateTime dataAtual = LocalDateTime.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        
+        tarefas.add(jTextFieldDescTarefa.getText() + ";" + NAO_CONCLUIDA + ";" + dataAtual.format(formato));
         
         preencherTabela();
+        
+        preencherStatus();
         
         jTextFieldDescTarefa.setText("");
     }//GEN-LAST:event_jButtonAddActionPerformed
@@ -160,6 +282,8 @@ public class seilaTela extends javax.swing.JFrame {
         
         filtrarTabela();
         
+        preencherStatus();
+        
         preencherTabela();
     }//GEN-LAST:event_jButtonRemoveTarefaActionPerformed
 
@@ -177,11 +301,12 @@ public class seilaTela extends javax.swing.JFrame {
         
         int indiceTarefaSelecionada = tarefas.indexOf(tarefaSelecionada);
         
+        
         String[] dados = tarefas.get(indiceTarefaSelecionada).split(";");
-        tarefas.set(indiceTarefaSelecionada, dados[0] + ";" + CONCLUIDA);
+        tarefas.set(indiceTarefaSelecionada, dados[0] + ";" + CONCLUIDA + ";" + dados[2]);
         
         filtrarTabela();
-        
+        preencherStatus();
         preencherTabela();
     }//GEN-LAST:event_jButtonConcTarefaActionPerformed
 
@@ -191,6 +316,10 @@ public class seilaTela extends javax.swing.JFrame {
         
         preencherTabela();
     }//GEN-LAST:event_jComboBoxFiltroItemStateChanged
+
+    private void jTextFieldTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldTotalActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldTotalActionPerformed
     
     private void filtrarTabela(){
         int opcao = jComboBoxFiltro.getSelectedIndex();
@@ -255,7 +384,8 @@ public class seilaTela extends javax.swing.JFrame {
             
             model.addRow(new Object[]{
                 dados[0],
-                dados[1]
+                dados[1],
+                dados[2]
             });
         }
     }
@@ -290,8 +420,15 @@ public class seilaTela extends javax.swing.JFrame {
     private javax.swing.JButton jButtonConcTarefa;
     private javax.swing.JButton jButtonRemoveTarefa;
     private javax.swing.JComboBox<String> jComboBoxFiltro;
+    private javax.swing.JLabel jLabelConc;
+    private javax.swing.JLabel jLabelNConc;
+    private javax.swing.JLabel jLabelTotal;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPaneTarefas;
     private javax.swing.JTable jTableTarefa;
+    private javax.swing.JTextField jTextFieldConcluidas;
     private javax.swing.JTextField jTextFieldDescTarefa;
+    private javax.swing.JTextField jTextFieldNConcluidas;
+    private javax.swing.JTextField jTextFieldTotal;
     // End of variables declaration//GEN-END:variables
 }
