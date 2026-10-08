@@ -4,16 +4,20 @@
  */
 package seila;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 
 /**
  *
- * @author Aluno
+ * @author Moobersson
  */
 public class seilaTela extends javax.swing.JFrame {
     
@@ -41,6 +45,11 @@ public class seilaTela extends javax.swing.JFrame {
         
         
         model = (DefaultTableModel) jTableTarefa.getModel();
+        
+        carregarTarefas();
+        
+        model.setRowCount(0);
+        
         
         jTextFieldTotal.setText(Integer.toString(total));
         jTextFieldConcluidas.setText(Integer.toString(conc));
@@ -255,6 +264,8 @@ public class seilaTela extends javax.swing.JFrame {
         
         tarefas.add(jTextFieldDescTarefa.getText() + ";" + NAO_CONCLUIDA + ";" + dataAtual.format(formato));
         
+        salvarTarefa();
+        
         preencherTabela();
         
         preencherStatus();
@@ -285,6 +296,8 @@ public class seilaTela extends javax.swing.JFrame {
         preencherStatus();
         
         preencherTabela();
+        
+        salvarTarefa();
     }//GEN-LAST:event_jButtonRemoveTarefaActionPerformed
 
     private void jButtonConcTarefaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonConcTarefaActionPerformed
@@ -308,6 +321,8 @@ public class seilaTela extends javax.swing.JFrame {
         filtrarTabela();
         preencherStatus();
         preencherTabela();
+        
+        salvarTarefa();
     }//GEN-LAST:event_jButtonConcTarefaActionPerformed
 
     private void jComboBoxFiltroItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jComboBoxFiltroItemStateChanged
@@ -389,6 +404,34 @@ public class seilaTela extends javax.swing.JFrame {
             });
         }
     }
+    
+    private void salvarTarefa(){
+        try{
+            FileWriter arquivo = new FileWriter("tarefas.txt");
+            for (String tarefa : tarefas){
+                arquivo.write(tarefa + "\n");
+            }
+            arquivo.close();
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null, "Erro ao salvar as tarefas!");
+        }
+    }
+    
+    private void carregarTarefas(){
+        try{
+            BufferedReader arquivo = new BufferedReader(new FileReader("tarefas.txt"));
+            
+            String tarefa;
+            
+            while ((tarefa = arquivo.readLine()) != null){                
+                tarefas.add(tarefa);
+            }
+            arquivo.close();
+        }catch(Exception e){
+            
+        }
+    }
+    
     
     /**
      * @param args the command line arguments
