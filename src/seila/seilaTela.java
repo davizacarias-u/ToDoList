@@ -10,7 +10,6 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -54,6 +53,8 @@ public class seilaTela extends javax.swing.JFrame {
         jTextFieldTotal.setText(Integer.toString(total));
         jTextFieldConcluidas.setText(Integer.toString(conc));
         jTextFieldNConcluidas.setText(Integer.toString(Nconc));
+        
+        preencherTabela();
     }
     
     
@@ -92,17 +93,17 @@ public class seilaTela extends javax.swing.JFrame {
 
         jTableTarefa.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Tarefas", "Status", "Data"
+                "Tarefas", "Status", "Data", "Data_Concluido"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -262,7 +263,7 @@ public class seilaTela extends javax.swing.JFrame {
         LocalDateTime dataAtual = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
-        tarefas.add(jTextFieldDescTarefa.getText() + ";" + NAO_CONCLUIDA + ";" + dataAtual.format(formato));
+        tarefas.add(jTextFieldDescTarefa.getText() + ";" + NAO_CONCLUIDA + ";" + dataAtual.format(formato) + ";" + " ");
         
         salvarTarefa();
         
@@ -310,13 +311,23 @@ public class seilaTela extends javax.swing.JFrame {
             return;
         }
         
+        
+        
         String tarefaSelecionada = recuperarTarefa(linhaSelecionada);
         
         int indiceTarefaSelecionada = tarefas.indexOf(tarefaSelecionada);
         
+        LocalDateTime dataAtual = LocalDateTime.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         
         String[] dados = tarefas.get(indiceTarefaSelecionada).split(";");
-        tarefas.set(indiceTarefaSelecionada, dados[0] + ";" + CONCLUIDA + ";" + dados[2]);
+        
+        if (dados[3] != " "){
+            JOptionPane.showMessageDialog(null, "Tarefa ja foi concluida!");
+            return;
+        }
+        
+        tarefas.set(indiceTarefaSelecionada, dados[0] + ";" + CONCLUIDA + ";" + dados[2] + ";" + dataAtual.format(formato));
         
         filtrarTabela();
         preencherStatus();
@@ -400,7 +411,8 @@ public class seilaTela extends javax.swing.JFrame {
             model.addRow(new Object[]{
                 dados[0],
                 dados[1],
-                dados[2]
+                dados[2],
+                dados[3]
             });
         }
     }
